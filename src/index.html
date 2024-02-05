@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./styles.css">
+    <title>Clustering</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="cnvs">
+            <select name="algorithm" id="algorithm">
+                <option value="naivekmeans" selected>Naive K-Means</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+            <canvas id="canvas" height="500px" width="800px"></canvas>
+            <div>
+                <button onclick="handleDataClick('random')">Generate random data</button>
+                <button onclick="handleDataClick('mickey')">Generate Mickey data</button>
+                <button onclick="handleDataClick('bad')">Generate completely random data</button>
+                <button onclick="toggleDrawing()">Draw your own shape</button>
+            </div>
+            <button id="cnvsclear" onclick="clearCanvas()">Clear canvas</button>
+        </div>
+    </div>
+
+    <script src="../dist/generateData.js"></script>
+</body>
+
+</html>

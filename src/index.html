@@ -9,24 +9,35 @@
 
 <body>
     <div class="container">
-        <div class="cnvs">
-            <select name="algorithm" id="algorithm">
-                <option value="naivekmeans" selected>Naive K-Means</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-            </select>
-            <canvas id="canvas" height="500px" width="800px"></canvas>
+        <div>
+            <label>Select Data Type:</label>
             <div>
-                <button onclick="handleDataClick('random')">Generate random data</button>
-                <button onclick="handleDataClick('mickey')">Generate Mickey data</button>
-                <button onclick="handleDataClick('bad')">Generate completely random data</button>
-                <button onclick="toggleDrawing()">Draw your own shape</button>
+                <input type="radio" name="data" id="random" value="random">
+                <label for="random">Random Circular Data</label>
             </div>
+            <div>
+                <input type="radio" name="data" id="mickey" value="mickey">
+                <label for="miceky">Mickey Mouse Data</label>
+            </div>
+            <div>
+                <input type="radio" name="data" id="completely-random" value="completely-random">
+                <label for="completely-random">Completely Random Data</label>
+            </div>
+            <div>
+                <input type="radio" name="data" id="drawn" value="drawn">
+                <label for="drawn">Draw your own dataset</label>
+            </div>
+
+            <button onclick="setupAlgorithm()">Start K-Means</button>
             <button id="cnvsclear" onclick="clearCanvas()">Clear canvas</button>
+        </div>
+
+        <div class="cnvs">
+            <h1>Naive K-Means Algorithm</h1>
+            <canvas id="canvas" height="500px" width="800px"></canvas>
         </div>
     </div>
 
     <script src="../dist/generateData.js"></script>
 </body>
-
 </html>

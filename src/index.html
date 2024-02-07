@@ -8,12 +8,19 @@
 </head>
 
 <body>
+
     <div class="container">
-        <div>
-            <label>Select Data Type:</label>
+
+        <div class="data">
+            <h2>
+                <label>Select Data Type:</label>
+            </h2>
             <div>
                 <input type="radio" name="data" id="random" value="random">
                 <label for="random">Random Circular Data</label>
+                <br>
+                <label for="clusterCount">Number of clusters</label>
+                <input type="number" id="clusterCount" min="1" max="10" value="3">
             </div>
             <div>
                 <input type="radio" name="data" id="mickey" value="mickey">
@@ -27,15 +34,31 @@
                 <input type="radio" name="data" id="drawn" value="drawn">
                 <label for="drawn">Draw your own dataset</label>
             </div>
+            <hr>
+            <div>
+                <label for="kAmount">Select number of partitions (K)</label>
+                <input type="number" id="kAmount" min="1" max="7" value="3">
+            </div>
 
-            <button onclick="setupAlgorithm()">Start K-Means</button>
-            <button id="cnvsclear" onclick="clearCanvas()">Clear canvas</button>
+            <div>
+                <button onclick="setupAlgorithm()">Start K-Means</button>
+                <button id="cnvsclear" onclick="clearCanvas()">Clear canvas</button>
+            </div>
+
+            <hr>
+            <div>
+                <p id="status">
+                    Algorithm not started
+                </p>
+            </div>
         </div>
 
         <div class="cnvs">
             <h1>Naive K-Means Algorithm</h1>
             <canvas id="canvas" height="500px" width="800px"></canvas>
         </div>
+
+        
     </div>
 
     <script src="../dist/generateData.js"></script>

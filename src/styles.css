@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10vh;
 }
 
 .cnvs {
@@ -9,6 +10,10 @@
     flex-direction: column;
     align-items: center;
     gap: 10px;
+}
+
+.data div {
+    margin: 10px;
 }
 
 #canvas {

@@ -8,8 +8,8 @@ const kAmount = document.getElementById("kAmount");
 const algorithmStatus = document.getElementById("status");
 let isDrawing = false;
 let canDraw = false;
-let drawnPoints = [];
-let generatedPoints = [];
+let drawnPoints = []; // Points from drawing
+let generatedPoints = []; // Points from other options
 let selectedData = null;
 let isAlgorithmActive = false;
 // KMEANS ALGORITHM
@@ -45,17 +45,16 @@ function setupAlgorithm() {
 }
 function beginKMeans(k, maxIterations, data) {
     isAlgorithmActive = true;
-    algorithmStatus.innerHTML = "Currently running";
+    let iter = 0;
     let centroids = generateRandomCentroids(k); // Randomly initialize the centroids
     let clusters = new Array(k).fill([]) // Initialize empty clusters
         .map(() => []);
-    let iter = 0;
     // Update centroids untill convergence or max iters
     let interval = setInterval(() => {
+        algorithmStatus.innerHTML = `Currently running, on iteration ${iter + 1}`;
         clusters = assignPointsToClusters(data, centroids);
         const prevCentroids = [...centroids]; // Save previous for convergence check
         centroids = computeCentroids(clusters);
-        console.log(centroids.length);
         // Visualize current centroids
         clearCanvas();
         clusters.forEach((cluster, index) => {
@@ -65,6 +64,7 @@ function beginKMeans(k, maxIterations, data) {
         });
         centroids.forEach(centroid => {
             drawPoint(centroid, 'black', 6);
+            console.log(centroid);
         });
         iter++;
         // Check for convergence or maximum iterations
@@ -127,6 +127,9 @@ function computeDistance(p1, p2) {
 function computeCentroids(clusters) {
     let centroids = [];
     clusters.forEach(cluster => {
+        if (cluster.length == 0) {
+            return; // Empty cluster, remain unchanged
+        }
         let sumX = 0;
         let sumY = 0;
         cluster.forEach(point => {
@@ -145,8 +148,10 @@ function computeCentroids(clusters) {
  * @returns True/False if no changes are made
  */
 function areCentroidsConverged(prev, current) {
+    const tolerance = 1e-5;
     return prev.every((centroid, index) => {
-        return centroid.x === current[index].x && centroid.y === current[index].y;
+        // return centroid.x === current[index].x && centroid.y === current[index].y;
+        return computeDistance(centroid, current[index]) < tolerance;
     });
 }
 function drawPoint(point, color, size = 3) {
@@ -203,7 +208,6 @@ function handleDataClick(dataType) {
     if (dataType !== "drawn") {
         generatedPoints = data;
     }
-    displayData(dataGenerator);
     return data;
 }
 function displayData(dataGenerator) {
@@ -272,22 +276,6 @@ function generateCompletelyRandomDataset() {
     }
     return data;
 }
-// /**
-//  * Generate random initial centroids for k-means algorithm
-//  * @param k: number of centroids
-//  * @returns array of random centroids
-//  */
-// function generateRandomCentroids(k: number): Point[] {
-//     const centroids: Point[] = []
-//     for (let i = 0; i < k; i++) {
-//         const centroid: Point = {
-//             x: Math.floor(Math.random() * CANVAS_WIDTH),
-//             y: Math.floor(Math.random() * CANVAS_HEIGHT),
-//         }
-//         centroids.push(centroid);
-//     }
-//     return centroids;
-// }
 /**
  * Generate random initial centroids for k-means algorithm
  * @param k: number of centroids
@@ -295,7 +283,7 @@ function generateCompletelyRandomDataset() {
  */
 function generateRandomCentroids(k) {
     const centroids = [];
-    const minDistance = Math.min(CANVAS_WIDTH, CANVAS_HEIGHT) / 10; // Minimum distance between centroids
+    const minDistance = Math.min(CANVAS_WIDTH, CANVAS_HEIGHT) / 5; // Minimum distance between centroids
     for (let i = 0; i < k; i++) {
         let newCentroid;
         // Ensure each centroid is at least minDistance away from existing centroids
@@ -326,7 +314,7 @@ function generatePointsInCluster(amount, centroid, radius) {
 }
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.style.border = "1px solid black";
+    canvas.style.border = "3px solid black";
     drawnPoints = [];
     if (isAlgorithmActive) {
         isAlgorithmActive = false;
@@ -335,11 +323,11 @@ function clearCanvas() {
 // Drawing
 function enableDrawing() {
     canDraw = true;
-    canvas.style.border = "3px dotted green";
+    canvas.style.border = "4px dotted green";
 }
 function disableDrawing() {
     canDraw = false;
-    canvas.style.border = "1px solid black";
+    canvas.style.border = "3px solid black";
 }
 function toggleDrawing() {
     canDraw = !canDraw;

@@ -9,8 +9,8 @@ const algorithmStatus = document.getElementById("status") as HTMLElement;
 
 let isDrawing = false;
 let canDraw = false;
-let drawnPoints: Point[][] = [];
-let generatedPoints: Point[][] | null = [];
+let drawnPoints: Point[][] = []; // Points from drawing
+let generatedPoints: Point[][] | null = []; // Points from other options
 let selectedData: string | null = null;
 let isAlgorithmActive = false;
 
@@ -38,7 +38,7 @@ function setupAlgorithm() {
 
     const K = parseInt(kAmount.value);
     const maxIter = 100;
-
+    
     if (selectedData === 'drawn') {
         if (drawnPoints.length === 0) {
             alert("Please draw data first.");
@@ -61,23 +61,22 @@ function setupAlgorithm() {
 function beginKMeans(k: number, maxIterations: number, data: Point[][]) {
 
     isAlgorithmActive = true;
-    algorithmStatus.innerHTML = "Currently running";
+    let iter = 0;
     let centroids: Point[] = generateRandomCentroids(k);  // Randomly initialize the centroids
     
     let clusters: Point[][] = new Array(k).fill([]) // Initialize empty clusters
         .map(() => []);
 
-    let iter = 0;
 
     // Update centroids untill convergence or max iters
     let interval = setInterval(() => {
-
+        algorithmStatus.innerHTML = `Currently running, on iteration ${iter+1}`;
+        
         clusters = assignPointsToClusters(data, centroids);
 
         const prevCentroids = [...centroids] // Save previous for convergence check
 
         centroids = computeCentroids(clusters);
-        console.log(centroids.length);
         
         // Visualize current centroids
         clearCanvas();
@@ -88,6 +87,8 @@ function beginKMeans(k: number, maxIterations: number, data: Point[][]) {
         })
         centroids.forEach(centroid => {
             drawPoint(centroid, 'black', 6)
+            console.log(centroid);
+            
         })
 
 
@@ -160,6 +161,10 @@ function computeCentroids(clusters: Point[][]): Point[] {
     let centroids: Point[] = [];
 
     clusters.forEach(cluster => {
+        if(cluster.length == 0) {
+            return; // Empty cluster, remain unchanged
+        }
+
         let sumX = 0;
         let sumY = 0;
 
@@ -182,8 +187,11 @@ function computeCentroids(clusters: Point[][]): Point[] {
  * @returns True/False if no changes are made
  */
 function areCentroidsConverged(prev: Point[], current: Point[]): boolean {
+    const tolerance = 1e-5;
+
     return prev.every((centroid, index) => {
-        return centroid.x === current[index].x && centroid.y === current[index].y;
+        // return centroid.x === current[index].x && centroid.y === current[index].y;
+        return computeDistance(centroid, current[index]) < tolerance;
     })
 }
 
@@ -244,8 +252,6 @@ function handleDataClick(dataType: string): Point[][] {
     if (dataType !== "drawn") {
         generatedPoints = data;
     }
-
-    displayData(dataGenerator);
 
     return data;
 }
@@ -333,24 +339,7 @@ function generateCompletelyRandomDataset(): Point[][] {
     return data;
 
 }
-// /**
-//  * Generate random initial centroids for k-means algorithm
-//  * @param k: number of centroids
-//  * @returns array of random centroids
-//  */
-// function generateRandomCentroids(k: number): Point[] {
-//     const centroids: Point[] = []
-//     for (let i = 0; i < k; i++) {
-//         const centroid: Point = {
-//             x: Math.floor(Math.random() * CANVAS_WIDTH),
-//             y: Math.floor(Math.random() * CANVAS_HEIGHT),
-//         }
 
-//         centroids.push(centroid);
-//     }
-
-//     return centroids;
-// }
 /**
  * Generate random initial centroids for k-means algorithm
  * @param k: number of centroids
@@ -358,7 +347,7 @@ function generateCompletelyRandomDataset(): Point[][] {
  */
 function generateRandomCentroids(k: number): Point[] {
     const centroids: Point[] = [];
-    const minDistance = Math.min(CANVAS_WIDTH, CANVAS_HEIGHT) / 10; // Minimum distance between centroids
+    const minDistance = Math.min(CANVAS_WIDTH, CANVAS_HEIGHT) / 5; // Minimum distance between centroids
 
     for (let i = 0; i < k; i++) {
         let newCentroid: Point;
@@ -411,7 +400,7 @@ function generatePointsInCluster(
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.style.border = "1px solid black"
+    canvas.style.border = "3px solid black"
     drawnPoints = [];
 
     if(isAlgorithmActive) {
@@ -423,12 +412,12 @@ function clearCanvas() {
 
 function enableDrawing() {
     canDraw = true;
-    canvas.style.border = "3px dotted green"
+    canvas.style.border = "4px dotted green"
 }
 
 function disableDrawing() {
     canDraw = false;
-    canvas.style.border = "1px solid black"
+    canvas.style.border = "3px solid black"
 }
 
 function toggleDrawing() {
